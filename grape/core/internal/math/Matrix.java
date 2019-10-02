@@ -14,6 +14,34 @@ public final class Matrix
         return out;
     }
 
+    public static float[][] identity3d()
+    {
+        return new float[][] 
+        {
+            {1, 0, 0},
+            {0, 1, 0},
+            {0, 0, 1}
+        };
+    }
+
+    public static float cross3d(float[][] matrix)
+    {
+        float d1 = matrix[0][0] * matrix[1][1] * matrix[2][2];
+        float d2 = matrix[1][0] * matrix[2][1] * matrix[0][2];
+        float d3 = matrix[2][0] * matrix[0][1] * matrix[1][2];
+
+        float nd1 = matrix[2][0] * matrix[1][1] * matrix[0][2];
+        float nd2 = matrix[0][0] * matrix[2][1] * matrix[1][2];
+        float nd3 = matrix[1][0] * matrix[0][1] * matrix[2][2];
+ 
+        return d1 + d2 + d3 - nd1 - nd2 - nd3;
+    }
+
+    public static float cross2d(float[][] matrix)
+    {
+        return matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
+    }
+
     public static float[][] add(float[][] a, float[][] b)
     {
         if (a.length < 1) return null;
@@ -36,8 +64,6 @@ public final class Matrix
     public static float[][] inverse_mat(float[][] input)
     {
         float[][] out = new float[input.length][input[0].length];
-
-
         
         return out;
     }

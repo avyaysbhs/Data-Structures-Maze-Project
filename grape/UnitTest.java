@@ -14,6 +14,13 @@ public class UnitTest
             { 2, 1 }
         };
 
-        MathFormat.print_mat(Matrix.add(Matrix.scale(Matrix.identity(2), 4), b), 3);
+        float[][] m = Matrix.add(Matrix.scale(Matrix.identity(2), 4), b);
+
+        MathFormat.print_mat(m, 3);
+
+        //m = Matrix.identity3d();
+        m = Matrix.identity(2);
+
+        System.out.println("Cross: " + Matrix.cross2d(m));
     }
 }
