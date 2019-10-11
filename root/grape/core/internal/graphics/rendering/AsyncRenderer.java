@@ -41,7 +41,7 @@ public abstract class AsyncRenderer extends JPanel implements Runnable
     {
         return runningThread;
     }
-
+    
     public void setState(RendererState state)
     {
         this.state = state;
