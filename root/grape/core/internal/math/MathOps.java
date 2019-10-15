@@ -28,4 +28,16 @@ public final class MathOps
         t = clamp(t, 0, 1);
         return s+((e-s)*t);
     }
+
+    public static int round(float f)
+    {
+        double floor = Math.floor(f), ceil = Math.ceil(f);
+        return ceil - f <= f - floor ? (int) ceil : (int) floor;
+    }
+
+    public static int round(double f)
+    {
+        double floor = Math.floor(f), ceil = Math.ceil(f);
+        return ceil - f <= f - floor ? (int) ceil : (int) floor;
+    }
 }
