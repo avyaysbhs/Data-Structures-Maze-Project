@@ -1,17 +1,49 @@
 package grape.core.internal.graphics;
 
+import grape.core.events.EventHub;
 import grape.core.internal.graphics.rendering.*;
 import grape.core.physics.Vector2;
 import java.awt.event.*;
+import java.util.HashMap;
 
 public abstract class Renderer2D extends AsyncRenderer implements KeyListener
 {
+    public final EventHub event = new EventHub();
     public abstract int vectorToPixelMagnitude(double v);
-    public abstract void keyPressed(KeyEvent e);
+    public boolean omg;
+    
+    public Renderer2D()
+    {
+        addKeyListener(this);
+    }
 
     public void draw(java.awt.Graphics2D g)
     {
         
+    }
+
+    
+    public void keyPressed(java.awt.event.KeyEvent e)
+    {
+        event.fire("key", new HashMap<String, Object>() {{
+            put("code", e.getKeyCode());
+            put("char", e.getKeyChar());
+            put("state", "down");
+        }});
+    }
+
+    public void keyReleased(java.awt.event.KeyEvent e)
+    {
+        event.fire("key", new HashMap<String, Object>() {{
+            put("code", e.getKeyCode());
+            put("char", e.getKeyChar());
+            put("state", "up");
+        }});
+    }
+
+    public void keyTyped(java.awt.event.KeyEvent e)
+    {
+
     }
 
     public int[] calculatePixel(Vector2 v)

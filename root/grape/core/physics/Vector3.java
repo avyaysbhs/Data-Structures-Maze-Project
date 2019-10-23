@@ -22,6 +22,14 @@ public final class Vector3
         this.z = z;
     }
 
+    public Vector3(float[] point)
+    {
+        if (point.length != 3) { x = 0; y = 0; z = 0; return; }
+        x = point[0];
+        y = point[1];
+        z = point[2];
+    }
+
     public Vector3(Vector2 v)
     {
         this.x = v.x;

@@ -10,13 +10,14 @@ import grape.core.internal.graphics.paint.Color3;
 import grape.core.internal.graphics.rendering.AsyncRenderer;
 import grape.core.internal.math.*;
 import grape.core.physics.Vector2;
+import grape.core.shapes.Shape2D;
 
 public class UnitTestCube
 {
     static Color3 color = new Color3(.7,.6,.7);
     static Vector2 VECTOR = new Vector2();
 
-    public static AsyncRenderer panel = new Renderer2D() {
+    public static Renderer2D panel = new Renderer2D() {
 
         private void writeObject(ObjectOutputStream s) throws IOException
         {
@@ -33,14 +34,6 @@ public class UnitTestCube
             }
         }
 
-        public void keyPressed(java.awt.event.KeyEvent e)
-        {
-            if (e.getKeyCode() == 37)
-            {
-                VECTOR.x--;
-            }
-        }
-    
         @Override
         public int vectorToPixelMagnitude(double v) {
             return MathOps.round(v * 10);
@@ -52,17 +45,15 @@ public class UnitTestCube
                 g.setColor(Color3.toAWT(color));
             g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(Color3.toAWT(new Color3(.4, .4, .4)));
-            Vector2 left = VECTOR.subtract(1, 1);
-            Vector2 right = VECTOR.add(2, 2);
 
-            System.out.println(left + " " + right);
+            Shape2D s = new Shape2D(
+                new Vector2(-4, 0),
+                new Vector2(2, 8),
+                new Vector2(4, 0)
+            );
 
-            int[] n = calculatePixel(left);
-            int[] n2 = calculatePixelMagnitude(right);
-            System.out.println(Arrays.toString(n));
-            System.out.println(Arrays.toString(n2));
             g.setColor(Color.black);
-            g.fillRect(n[0], n[1], n2[0], n2[1]);
+            g.fill(Shape2D.ToPolygonAWT(s, this));
         }
     };
 
@@ -72,7 +63,13 @@ public class UnitTestCube
     public static void main(String[] args)
     {
         JFrame frame = new JFrame();
-        
+        frame.addKeyListener(panel);
+
+        panel.event.on("key", key ->
+        {
+            System.out.println(key.get("char"));
+        });
+
         frame.add(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
