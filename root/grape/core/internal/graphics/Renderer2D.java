@@ -8,10 +8,11 @@ import java.util.HashMap;
 
 public abstract class Renderer2D extends AsyncRenderer implements KeyListener
 {
+    private static final long serialVersionUID = 1L;
+
     public final EventHub event = new EventHub();
     public abstract int vectorToPixelMagnitude(double v);
-    public boolean omg;
-    
+
     public Renderer2D()
     {
         addKeyListener(this);

@@ -18,21 +18,7 @@ public class UnitTestCube
     static Vector2 VECTOR = new Vector2();
 
     public static Renderer2D panel = new Renderer2D() {
-
-        private void writeObject(ObjectOutputStream s) throws IOException
-        {
-            s.defaultWriteObject();
-        }
-
-        private void readObject(ObjectInputStream s) throws IOException
-        {
-            try {
-                s.defaultReadObject();
-            } catch (ClassNotFoundException e)
-            {
-                
-            }
-        }
+        private static final long serialVersionUID = 1L;
 
         @Override
         public int vectorToPixelMagnitude(double v) {

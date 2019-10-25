@@ -6,7 +6,7 @@ import grape.core.internal.math.*;
 
 public abstract class AsyncRenderer extends JPanel implements Runnable
 {
-    private static final long serialVersionUID = 1000000000000L;
+    private static final long serialVersionUID = 1L;
 
     private RendererState state = RendererState.Idle;
     private Thread runningThread = null;
