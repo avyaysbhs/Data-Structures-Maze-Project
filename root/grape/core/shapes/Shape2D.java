@@ -28,4 +28,9 @@ public class Shape2D
         Polygon p = new Polygon(xpoints, ypoints, s.points.length);
         return p;
     }
+
+    public Polygon ToPolygonAWT(Renderer2D renderer)
+    {
+        return ToPolygonAWT(this, renderer);
+    }
 }
