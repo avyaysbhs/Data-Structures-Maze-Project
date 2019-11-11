@@ -101,6 +101,11 @@ public final class Vector2
         return scale(a, from(b));
     }
 
+    public static Vector2 fromCoordinate(Coordinate c)
+    {
+        return new Vector2(c.X(), c.Y());
+    };
+
     public static Vector2 from(Vector3 v)
     {
         return new Vector2(v.x, v.y);

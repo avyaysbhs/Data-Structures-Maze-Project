@@ -11,4 +11,12 @@ public class Window extends JFrame
         setSize(width, height);
         setVisible(true);
     }
+
+    public final void showView() { 
+        setVisible(true); 
+    }
+
+    public final void hideView() {
+        setVisible(false);
+    }
 }

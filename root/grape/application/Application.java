@@ -3,8 +3,11 @@ package grape.application;
 import java.awt.Graphics2D;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import javax.swing.JFrame;
 
 import grape.Grape;
 import grape.core.Node;
@@ -13,28 +16,40 @@ import grape.core.internal.concurrent.*;
 import grape.core.internal.graphics.Renderer2D;
 import grape.core.internal.graphics.paint.DrawableNode;
 import grape.core.internal.graphics.rendering.AsyncRenderer;
+import grape.core.physics.Coordinate;
 
 public class Application {
 
     @Retention(RetentionPolicy.RUNTIME)
     public static @interface Configurations {
-        Class<? extends RenderingEngine> Renderer();
+        Class<? extends RenderingEngine> Renderer() default GrapeEngine2D.class;
+        Coordinate Dimensions();
     }
 
+    private Configurations configurations;
     private String[] args;
-    protected final RenderingEngine RenderingEngine;
+    private RenderingEngine RenderingEngine;
+    private Window _window;
 
-    public Application(RenderingEngine renderer) {
-        RenderingEngine = renderer;
+    public Application()
+    {
+
     }
+
+    public Window window() { return _window; }
 
     public void passParameters(String[] args) {
         if (this.args == null)
             this.args = args;
     }
 
-    public Application() {
-        throw new UnsupportedOperationException();
+    public void passConfigurations(Configurations config)
+    {
+        if (configurations == null) {
+            configurations = config;
+            _window = new Window(config.Dimensions().X(), config.Dimensions().Y());
+            _window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        }
     }
 
     static abstract class RenderingEngine extends DrawableNode {
@@ -57,11 +72,21 @@ public class Application {
         return args;
     }
 
+    public final void setRenderer(RenderingEngine renderer)
+    {
+        if (RenderingEngine == null)
+            RenderingEngine = renderer;
+    }
+
     protected static final void launch(String[] args, Class<? extends Application> _app) {
         try {
+            if (!_app.isAnnotationPresent(Configurations.class)) throw new Grape.ConfigurationException("No configurations present!");
             RenderingEngine engine = _app.getAnnotation(Configurations.class).Renderer().newInstance();
-            Application app = _app.getConstructor(RenderingEngine.class).newInstance(engine);
+            Constructor<Application> constructor = (Constructor<Application>) _app.getConstructor();
+            Application app = constructor.newInstance();
+            app.setRenderer(engine);
             app.passParameters(args);
+            app.passConfigurations(_app.getAnnotation(Configurations.class));
             for (Method m : _app.getMethods()) {
                 if (m.isAnnotationPresent(grape.application.lifecycle.Init.class) && m.getParameterCount() == 0) {
                     m.invoke(app);
@@ -72,6 +97,16 @@ public class Application {
                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
+    }
+
+    protected static final void launch(Class<? extends Application> _app)
+    {
+        launch(new String[0], _app);
+    }
+
+    public final RenderingEngine getRenderingEngine()
+    {
+        return RenderingEngine;
     }
 
     private static void update(Node node)
@@ -86,18 +121,37 @@ public class Application {
         });
     }
 
-    private static void initialize(Application app) {
-        AsyncRenderer.StartRenderer(app.RenderingEngine.getRenderer());
-        JobScheduler.main.async(new Job(() -> {
-            while (true) {
+    private static class ApplicationRunner implements Runnable
+    {
+        private boolean running = true;
+        private Application app;
+
+        public ApplicationRunner(Application app)
+        {
+            this.app = app;
+        }
+
+        public void run()
+        {
+            while (running) {
                 try {
                     Thread.sleep(50);
-                    update(app.RenderingEngine);
+                    update(app.getRenderingEngine());
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
-        }));
+        }
+
+        public void stop()
+        {
+            running = false;
+        }
     }
+
+    private static void initialize(Application app) {
+        AsyncRenderer.StartRenderer(app.getRenderingEngine().getRenderer());
+        JobScheduler.main.async(new Job(new ApplicationRunner(app)));
+    }
+    
 }
