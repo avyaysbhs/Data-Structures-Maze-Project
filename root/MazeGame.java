@@ -9,12 +9,14 @@ import grape.core.physics.Coordinate;
 @Application.Configurations(
     Renderer = GrapeEngine2D.class,
     Dimensions = @Coordinate(
-        X = 1080,
+        X = 720,
         Y = 720
     )
 )
 public class MazeGame extends Application
 {
+    public Wall[][] currentLevel = new Wall[15][15]; 
+
     @Init
     public void start()
     {
