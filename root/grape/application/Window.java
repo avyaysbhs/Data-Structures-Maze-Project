@@ -4,10 +4,10 @@ import javax.swing.JFrame;
 
 public class Window extends JFrame
 {
-    public Window(int width, int height)
+    public Window(int width, int height, boolean resizable)
     {
         super();
-        setResizable(false);
+        setResizable(resizable);
         setSize(width, height);
         setVisible(true);
     }

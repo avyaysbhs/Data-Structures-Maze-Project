@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - MazeGame",
+            "request": "launch",
+            "mainClass": "MazeGame",
+            "projectName": "Maze Project_785b82d8"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - UnitTestCube",
+            "request": "launch",
+            "mainClass": "UnitTestCube",
+            "projectName": "Maze Project_785b82d8"
+        }
+    ]
+}

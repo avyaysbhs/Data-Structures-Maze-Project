@@ -76,9 +76,9 @@ public class UnitTestCube
                 }*/
 
                 color.set(
-                    color.r * (1 + Math.random()/100 - .005),
-                    color.g * (1 + Math.random()/100 - .005),
-                    color.b * (1 + Math.random()/100 - .005));
+                    color.r * (1 + Math.random()/100 - .015),
+                    color.g * (1 + Math.random()/100 - .015),
+                    color.b * (1 + Math.random()/100 - .015));
             }
         }));
     }
