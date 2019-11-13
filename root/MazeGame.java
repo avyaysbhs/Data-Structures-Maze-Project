@@ -17,9 +17,9 @@ import java.awt.event.KeyListener;
 import java.io.*;
 
 @Application.Configurations(
-    Components = {}, Systems = {}, 
+    Components = {}, Systems = {},
     Window = @Application.WindowConfigurations(
-        Resizable = false, 
+        Resizable = false,
         Dimensions = @Coordinate(X = 720, Y = 720)
     )
 )
@@ -39,7 +39,9 @@ public class MazeGame extends Application implements KeyListener {
         ArrayList<String> lines = new ArrayList<>();
 
         try {
-            BufferedReader in = new BufferedReader(new FileReader(new File("root/levels/level" + level + ".txt")));
+            File _level = new File("levels/level" + level + ".txt");
+            System.out.println(_level.getAbsolutePath());
+            BufferedReader in = new BufferedReader(new FileReader(_level));
             String t;
             String out = "";
             while ((t = in.readLine()) != null) {
@@ -144,43 +146,95 @@ public class MazeGame extends Application implements KeyListener {
             int size = 720/distance_to_wall;
             int indent = i * size;
             int j =  i + distance_to_wall;
-            
+
             Rectangle r = new Rectangle(360 - indent/2, 360 - indent/2, indent, indent);
-            
-            gfx.setPaint(Color3.toAWT(new Color3(j/40f, j/40f - .2f, j/40f - .2f)));
+
+            Color currentWallColor = Color3.toAWT(new Color3(i/40f + .3f, i/40f + .1f, i/40f + .1f));
+            gfx.setPaint(currentWallColor);
             gfx.fill(r);
             gfx.setPaint(Color.yellow);
             gfx.draw(r);
-            
-            Location currentSquare = explorer.loc().moveIn(explorer.d(), i);
-            System.out.println(currentSquare);
-            if (!isWallAt(currentSquare.moveIn(2)))
+
+            Location currentSquare = explorer.loc().moveIn(explorer.d(), distance_to_wall - i);
+
+            Polygon polyTopLeft = new Polygon();
+            polyTopLeft.addPoint(360 - indent, 360 - indent/2);
+            polyTopLeft.addPoint(360 - indent, 360 - indent);
+            polyTopLeft.addPoint(360 - indent/2, 360 - indent/2);
+
+            Polygon polyBottomLeft = new Polygon();
+            polyBottomLeft.addPoint(360 - indent, 360 + indent/2);
+            polyBottomLeft.addPoint(360 - indent, 360 + indent);
+            polyBottomLeft.addPoint(360 - indent/2, 360 + indent/2);
+
+            Polygon polyTopRight = new Polygon();
+            polyTopRight.addPoint(360 + indent/2, 360 - indent/2);
+            polyTopRight.addPoint(360 + indent, 360 - indent/2);
+            polyTopRight.addPoint(360 + indent, 360 - indent);
+
+            Polygon polyBottomRight = new Polygon();
+            polyBottomRight.addPoint(360 + indent/2, 360 + indent/2);
+            polyBottomRight.addPoint(360 + indent, 360 + indent/2);
+            polyBottomRight.addPoint(360 + indent, 360 + indent);
+
+            if (currentSquare.equals(end))
             {
-                // draw right hole
+                gfx.setPaint(Color.white);
+                gfx.fill(r);
             }
-            else if (!isWallAt(currentSquare.moveIn(4)))
+
+            if (wallEmptyAt(currentSquare.moveIn(4)))
             {
-                // draw left hole
-                Polygon polyTop = new Polygon();
-                polyTop.addPoint(360 - indent, 360 - indent/2);
-                polyTop.addPoint(360 - indent, 360 - indent);
-                polyTop.addPoint(360 - indent/2, 360 - indent/2);
-    
-                Polygon polyBottom = new Polygon();
-                polyBottom.addPoint(360 - indent, 360 + indent/2);
-                polyBottom.addPoint(360 - indent, 360 + indent);
-                polyBottom.addPoint(360 - indent/2, 360 + indent/2);
+                gfx.setColor(Color3.toAWT(new Color3(.15,.05, .05)));
+                gfx.fill(polyTopLeft);
+                gfx.fill(polyBottomLeft);
 
-                gfx.setColor(Color3.toAWT(new Color3(.25,.15, .15)));
-                gfx.fill(polyTop);
-                gfx.fill(polyBottom);
-
-                gfx.fill(new Rectangle(360 - indent, 360 - indent/2, indent/2, indent));
+                Rectangle wallInset = new Rectangle(360 - indent, 360 - indent/2, indent/2, indent);
                 gfx.setColor(Color.yellow);
-
-                gfx.draw(polyTop);
-                gfx.draw(polyBottom);
+                gfx.draw(wallInset);
+                gfx.setColor(currentWallColor);
+                gfx.fill(wallInset);
             }
+
+            if (wallEmptyAt(currentSquare.moveIn(2)))
+            {
+                gfx.setColor(Color3.toAWT(new Color3(.15,.05, .05)));
+                gfx.fill(polyTopRight);
+                gfx.fill(polyBottomRight);
+
+                Rectangle wallInset = new Rectangle(360 + indent, 360 - indent/2, indent/2, indent);
+                gfx.setColor(Color.yellow);
+                gfx.draw(wallInset);
+                gfx.setColor(currentWallColor);
+                gfx.fill(wallInset);
+            }
+
+            gfx.setColor(Color.yellow);
+
+            polyTopLeft.reset();
+            polyTopLeft = new Polygon();
+            polyTopLeft.addPoint(360 - indent, 360 - indent);
+            polyTopLeft.addPoint(360 - indent/2, 360 - indent/2);
+
+            polyBottomLeft.reset();
+            polyBottomLeft = new Polygon();
+            polyBottomLeft.addPoint(360 - indent, 360 + indent);
+            polyBottomLeft.addPoint(360 - indent/2, 360 + indent/2);
+
+            polyTopRight.reset();
+            polyTopRight = new Polygon();
+            polyTopRight.addPoint(360 + indent/2, 360 - indent/2);
+            polyTopRight.addPoint(360 + indent, 360 - indent);
+
+            polyBottomRight.reset();
+            polyBottomRight = new Polygon();
+            polyBottomRight.addPoint(360 + indent/2, 360 + indent/2);
+            polyBottomRight.addPoint(360 + indent, 360 + indent);
+
+            gfx.draw(polyTopLeft);
+            gfx.draw(polyBottomLeft);
+            gfx.draw(polyTopRight);
+            gfx.draw(polyBottomRight);
         }
 
         gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -188,16 +242,15 @@ public class MazeGame extends Application implements KeyListener {
         gfx.drawString("Level " + currentLevelID, (int) 605, (int) 40);
         gfx.drawString(moves + " moves", (int) 605, (int) 60);
         gfx.drawString("[M] Menu", (int) 605, (int) 80);
-        System.out.println(distance_to_wall);
     }
 
-    public boolean isWallAt(Location loc)
+    public boolean wallEmptyAt(Location loc)
     {
         if (loc.r() > 14 || loc.r() < 0)
             return false;
         if (loc.c() > 14 || loc.c() < 0)
             return false;
-        return currentLevel[loc.r()][loc.c()] != null;
+        return currentLevel[loc.r()][loc.c()] == null;
     }
 
     public static void main(String[] args) {
@@ -206,13 +259,12 @@ public class MazeGame extends Application implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        
+
     }
 
     public void menu()
     {
         disabled = !disabled;
-
         // TODO implementation
     }
 
